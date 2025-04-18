@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pour Ma Chérie ❤️</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #ffeff3;
+      color: #333;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    header {
+      padding: 30px 0;
+      animation: fadeIn 1s ease;
+    }
+    
+    h1 {
+      color: #ff6b9c;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    h2 {
+      color: #ff6b9c;
+      font-size: 1.8rem;
+      margin: 25px 0 15px;
+    }
+    
+    p {
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .heart {
+      color: #ff4081;
+      font-size: 1.5em;
+      animation: pulse 1.5s infinite;
+      display: inline-block;
+    }
+    
+    .section {
+      background-color: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin: 30px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+    
+    .section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    button {
+      background-color: #ff6b9c;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    
+    button:hover {
+      background-color: #ff4081;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+    
+    #love-question {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ff4081;
+      margin: 30px 0;
+    }
+    
+    #quiz-container, #memory-game, #love-letter, #special-moments {
+      margin-top: 40px;
+    }
+    
+    #love-response {
+      font-size: 2rem;
+      color: #ff4081;
+      margin: 20px 0;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    
+    #no-btn {
+      position: relative;
+    }
+    
+    #quiz-result {
+      margin: 20px 0;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    
+    /* Memory game styling */
+    .memory-board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 20px auto;
+      max-width: 400px;
+    }
+    
+    .card {
+      height: 80px;
+      background-color: #ff9fbf;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .card.flipped {
+      background-color: white;
+      transform: rotateY(180deg);
+    }
+    
+    .card.matched {
+      background-color: #c8e6c9;
+      cursor: default;
+    }
+    
+    .card-content {
+      display: none;
+    }
+    
+    .card.flipped .card-content {
+      display: block;
+    }
+
+    /* Special moments gallery */
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .gallery-item {
+      width: 120px;
+      height: 120px;
+      background-color: #ffd6e6;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .floating {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    /* Confetti effect */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #f0f;
+      border-radius: 0;
+      pointer-events: none;
+      z-index: 99;
+    }
+    
+    /* Love letter */
+    .letter {
+      background-color: white;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: left;
+      position: relative;
+      margin: 30px auto;
+      max-width: 600px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      font-family: 'Courier New', Courier, monospace;
+      display: none;
+    }
+    
+    .letter:before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      width: 30px;
+      height: 30px;
+      background-color: #ff4081;
+      transform: rotate(45deg);
+      z-index: -1;
+    }
+    
+    .letter p {
+      margin-bottom: 15px;
+      line-height: 1.8;
+    }
+    
+    .signature {
+      font-style: italic;
+      text-align: right;
+      margin-top: 20px;
+    }
+    
+    #progress {
+      height: 5px;
+      background-color: #ff4081;
+      width: 0%;
+      transition: width 0.5s ease;
+      margin: 10px 0;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Pour Ma Chérie <span class="heart">❤️</span></h1>
+      <p>Une page spéciale pour la personne la plus spéciale de ma vie</p>
+    </header>
+    
+    <section id="main-question" class="section visible">
+      <h2>La Question du Jour</h2>
+      <p id="love-question">Est-ce que tu m'aimes ? <span class="heart">❤️</span></p>
+      
+      <button id="yes-btn">Oui, bien sûr !</button>
+      <button id="no-btn">Non</button>
+      
+      <p id="love-response"></p>
+    </section>
+    
+    <section id="quiz-container" class="section">
+      <h2>Quiz d'Amour</h2>
+      <p>Voyons combien tu me connais...</p>
+      
+      <div id="quiz-question"></div>
+      <div id="quiz-options"></div>
+      <div id="quiz-result"></div>
+      <div id="progress"></div>
+      
+      <button id="next-question" style="display: none;">Question suivante</button>
+    </section>
+    
+    <section id="memory-game" class="section">
+      <h2>Jeu de Mémoire <span class="heart">❤️</span></h2>
+      <p>Trouve toutes les paires d'émojis d'amour !</p>
+      
+      <div class="memory-board"></div>
+      <p id="memory-result"></p>
+    </section>
+    
+    <section id="love-letter" class="section">
+      <h2>Lettre d'Amour</h2>
+      <p>Clique sur le bouton pour ouvrir ma lettre</p>
+      
+      <button id="show-letter">Ouvrir la lettre</button>
+      
+      <div class="letter" id="letter-content">
+        <p>Ma chérie,</p>
+        <p>Parfois les mots ne suffisent pas pour exprimer ce que je ressens pour toi. Chaque jour passé à tes côtés est un cadeau que je chéris profondément.</p>
+        <p>Tu illumines ma vie avec ton sourire, ton rire, ta tendresse. Tu me rends meilleur chaque jour et je suis reconnaissant pour tous les moments que nous partageons ensemble.</p>
+        <p>Je t'aime pour qui tu es, pour ta force, ta gentillesse, ton intelligence et toutes ces petites choses qui te rendent unique et irremplaçable à mes yeux.</p>
+        <p>Merci d'être toi, merci d'être à mes côtés.</p>
+        <p class="signature">Avec tout mon amour,<br>Ton amoureux</p>
+      </div>
+    </section>
+    
+    <section id="special-moments" class="section">
+      <h2>Nos Moments Spéciaux</h2>
+      <p>Ces symboles représentent quelques-uns de nos moments préférés ensemble. 
+         Tu peux les remplacer par des photos de vous deux!</p>
+      
+      <div class="gallery">
+        <div class="gallery-item floating">💑</div>
+        <div class="gallery-item floating">🌅</div>
+        <div class="gallery-item floating">🍕</div>
+        <div class="gallery-item floating">🎬</div>
+        <div class="gallery-item floating">🎵</div>
+        <div class="gallery-item floating">⭐</div>
+      </div>
+      
+      <p>Et il y a encore tant d'autres moments merveilleux à venir...</p>
+    </section>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Reveal sections as you scroll
+      const sections = document.querySelectorAll('.section:not(.visible)');
+      
+      function checkScroll() {
+        sections.forEach(section => {
+          const sectionTop = section.getBoundingClientRect().top;
+          const windowHeight = window.innerHeight;
+          
+          if (sectionTop < windowHeight * 0.8) {
+            section.classList.add('visible');
+          }
+        });
+      }
+      
+      window.addEventListener('scroll', checkScroll);
+      
+      // Love question functionality
+      const yesBtn = document.getElementById('yes-btn');
+      const noBtn = document.getElementById('no-btn');
+      const loveResponse = document.getElementById('love-response');
+      
+      yesBtn.addEventListener('click', function() {
+        loveResponse.textContent = 'Je t\'aime aussi, énormément! ❤️';
+        loveResponse.style.opacity = '1';
+        createConfetti();
+      });
+      
+      // Make the "No" button run away
+      noBtn.addEventListener('mouseover', function() {
+        const maxX = window.innerWidth - this.offsetWidth;
+        const maxY = window.innerHeight - this.offsetHeight;
+        
+        const randomX = Math.floor(Math.random() * maxX);
+        const randomY = Math.floor(Math.random() * maxY);
+        
+        this.style.position = 'absolute';
+        this.style.left = randomX + 'px';
+        this.style.top = randomY + 'px';
+      });
+      
+      noBtn.addEventListener('click', function() {
+        loveResponse.textContent = 'Je sais que tu m\'aimes! Ne mens pas! 😘';
+        loveResponse.style.opacity = '1';
+      });
+      
+      // Quiz functionality
+      const questions = [
+        {
+          question: 'Quel est mon plat préféré?',
+          options: ['Pizza', 'Sushi', 'Pâtes', 'Salade'],
+          correctIndex: 0, // Change this to the correct answer
+        },
+        {
+          question: 'Quelle est ma couleur préférée?',
+          options: ['Bleu', 'Rouge', 'Vert', 'Noir'],
+          correctIndex: 1, // Change this to the correct answer
+        },
+        {
+          question: 'Que préférerais-je faire un samedi après-midi?',
+          options: ['Netflix & Chill', 'Sortie en nature', 'Shopping', 'Jeux vidéo'],
+          correctIndex: 0, // Change this to the correct answer
+        },
+        {
+          question: 'Quelle est mon animal favori?',
+          options: ['Chat', 'Chien', 'Panda', 'Dauphin'],
+          correctIndex: 2, // Change this to the correct answer
+        },
+        {
+          question: 'Quelle qualité apprécies-tu le plus chez moi?',
+          options: ['Mon humour', 'Ma gentillesse', 'Mon intelligence', 'Ma créativité'],
+          correctIndex: 0, // Change this to the correct answer
+        }
+      ];
+      
+      let currentQuestionIndex = 0;
+      let score = 0;
+      
+      const quizQuestion = document.getElementById('quiz-question');
+      const quizOptions = document.getElementById('quiz-options');
+      const quizResult = document.getElementById('quiz-result');
+      const nextQuestionBtn = document.getElementById('next-question');
+      const progressBar = document.getElementById('progress');
+      
+      function displayQuestion() {
+        const question = questions[currentQuestionIndex];
+        quizQuestion.innerHTML = `<p>${question.question}</p>`;
+        
+        quizOptions.innerHTML = '';
+        question.options.forEach((option, index) => {
+          const button = document.createElement('button');
+          button.textContent = option;
+          button.addEventListener('click', () => checkAnswer(index));
+          quizOptions.appendChild(button);
+        });
+        
+        updateProgress();
+      }
+      
+      function checkAnswer(selectedIndex) {
+        const question = questions[currentQuestionIndex];
+        
+        if (selectedIndex === question.correctIndex) {
+          score++;
+          quizResult.textContent = '✅ Correct!';
+          quizResult.style.color = '#4caf50';
+        } else {
+          quizResult.textContent = `❌ Non, la bonne réponse était: ${question.options[question.correctIndex]}`;
+          quizResult.style.color = '#f44336';
+        }
+        
+        const optionButtons = quizOptions.querySelectorAll('button');
+        optionButtons.forEach((button, index) => {
+          button.disabled = true;
+          if (index === question.correctIndex) {
+            button.style.backgroundColor = '#4caf50';
+          } else if (index === selectedIndex && selectedIndex !== question.correctIndex) {
+            button.style.backgroundColor = '#f44336';
+          }
+        });
+        
+        currentQuestionIndex++;
+        
+        if (currentQuestionIndex < questions.length) {
+          nextQuestionBtn.style.display = 'inline-block';
+        } else {
+          setTimeout(() => {
+            quizResult.textContent = `Quiz terminé! Ton score: ${score}/${questions.length}`;
+            quizResult.style.color = '#ff4081';
+            
+            if (score === questions.length) {
+              quizResult.textContent += ' - Tu me connais parfaitement! ❤️';
+              createConfetti();
+            } else if (score >= questions.length / 2) {
+              quizResult.textContent += ' - Pas mal du tout! 😊';
+            } else {
+              quizResult.textContent += ' - On dirait qu\'on doit passer plus de temps ensemble! 😉';
+            }
+          }, 1000);
+        }
+      }
+      
+      nextQuestionBtn.addEventListener('click', function() {
+        quizResult.textContent = '';
+        nextQuestionBtn.style.display = 'none';
+        displayQuestion();
+      });
+      
+      function updateProgress() {
+        const progressPercentage = (currentQuestionIndex / questions.length) * 100;
+        progressBar.style.width = progressPercentage + '%';
+      }
+      
+      // Memory game functionality
+      const memoryBoard = document.querySelector('.memory-board');
+      const memoryResult = document.getElementById('memory-result');
+      const symbols = ['❤️', '💕', '😘', '💖', '🌹', '💗', '💓', '💞'];
+      let cards = [...symbols, ...symbols];
+      let flippedCards = [];
+      let matchedPairs = 0;
+      
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+      
+      function createMemoryGame() {
+        cards = shuffleArray(cards);
+        memoryBoard.innerHTML = '';
+        
+        cards.forEach((symbol, index) => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.dataset.index = index;
+          card.dataset.symbol = symbol;
+          
+          card.innerHTML = `<div class="card-content">${symbol}</div>`;
+          
+          card.addEventListener('click', flipCard);
+          memoryBoard.appendChild(card);
+        });
+      }
+      
+      function flipCard() {
+        if (flippedCards.length >= 2 || this.classList.contains('flipped') || this.classList.contains('matched')) {
+          return;
+        }
+        
+        this.classList.add('flipped');
+        flippedCards.push(this);
+        
+        if (flippedCards.length === 2) {
+          setTimeout(checkForMatch, 500);
+        }
+      }
+      
+      function checkForMatch() {
+        const [card1, card2] = flippedCards;
+        
+        if (card1.dataset.symbol === card2.dataset.symbol) {
+          card1.classList.add('matched');
+          card2.classList.add('matched');
+          matchedPairs++;
+          
+          if (matchedPairs === symbols.length) {
+            memoryResult.textContent = 'Félicitations! Tu as trouvé toutes les paires! 💕';
+            createConfetti();
+          }
+        } else {
+          card1.classList.remove('flipped');
+          card2.classList.remove('flipped');
+        }
+        
+        flippedCards = [];
+      }
+      
+      // Love letter functionality
+      const showLetterBtn = document.getElementById('show-letter');
+      const letterContent = document.getElementById('letter-content');
+      
+      showLetterBtn.addEventListener('click', function() {
+        if (letterContent.style.display === 'block') {
+          letterContent.style.display = 'none';
+          showLetterBtn.textContent = 'Ouvrir la lettre';
+        } else {
+          letterContent.style.display = 'block';
+          showLetterBtn.textContent = 'Fermer la lettre';
+          createConfetti();
+        }
+      });
+      
+      // Confetti effect
+      function createConfetti() {
+        const confettiCount = 200;
+        const colors = ['#ff4081', '#ff80ab', '#ff94c2', '#f8bbd0', '#fce4ec', '#ffb6c1', '#ffa6c9'];
+        
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const size = Math.random() * 10 + 5;
+          const shape = Math.random() > 0.5 ? '50%' : '0';
+          
+          confetti.style.backgroundColor = color;
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.borderRadius = shape;
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.top = `-${size}px`;
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          
+          const animation = confetti.animate(
+            [
+              { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+              { transform: `translate(${Math.random() * 100 - 50}px, ${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+            ],
+            {
+              duration: Math.random() * 3000 + 2000,
+              easing: 'cubic-bezier(0,0,0.2,1)'
+            }
+          );
+          
+          document.body.appendChild(confetti);
+          
+          animation.onfinish = () => {
+            confetti.remove();
+          };
+        }
+      }
+      
+      // Initialize everything
+      displayQuestion();
+      createMemoryGame();
+      
+      // Animate in the first section
+      setTimeout(() => {
+        document.querySelector('#main-question').classList.add('visible');
+      }, 300);
+    });
+  </script>
+</body>
+</html>
