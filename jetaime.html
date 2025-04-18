@@ -98,7 +98,7 @@
       margin: 30px 0;
     }
     
-    #quiz-container, #memory-game, #love-letter, #special-moments {
+    #quiz-container, #memory-game, #love-letter, #puzzle-game {
       margin-top: 40px;
     }
     
@@ -161,27 +161,6 @@
       display: block;
     }
 
-    /* Special moments gallery */
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin: 20px 0;
-    }
-    
-    .gallery-item {
-      width: 120px;
-      height: 120px;
-      background-color: #ffd6e6;
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 3rem;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    }
-    
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -260,6 +239,51 @@
       margin: 10px 0;
       border-radius: 3px;
     }
+    
+    /* Puzzle Game */
+    #puzzle-container {
+      position: relative;
+      margin: 20px auto;
+      width: 500px;
+      height: 375px;
+      border: 2px solid #ff4081;
+      overflow: hidden;
+    }
+    
+    #puzzle-image {
+      width: 100%;
+      display: none;
+    }
+    
+    .puzzle-piece {
+      position: absolute;
+      transition: all 0.2s;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .puzzle-piece.correct {
+      border: 2px solid #4caf50;
+      box-shadow: 0 0 10px #4caf50;
+    }
+    
+    .image-upload {
+      margin: 20px 0;
+    }
+    
+    #difficulty-select {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 20px;
+      border: 1px solid #ff4081;
+    }
+    
+    #puzzle-message {
+      font-weight: bold;
+      color: #ff4081;
+      margin: 15px 0;
+      min-height: 30px;
+    }
   </style>
 </head>
 <body>
@@ -311,25 +335,30 @@
         <p>Tu illumines ma vie avec ton sourire, ton rire, ta tendresse. Tu me rends meilleur chaque jour et je suis reconnaissant pour tous les moments que nous partageons ensemble.</p>
         <p>Je t'aime pour qui tu es, pour ta force, ta gentillesse, ton intelligence et toutes ces petites choses qui te rendent unique et irremplaçable à mes yeux.</p>
         <p>Merci d'être toi, merci d'être à mes côtés.</p>
-        <p class="signature">Avec tout mon amour,<br>Ton amoureux</p>
+        <p class="signature">Ton chéri d'amour qui t'aime</p>
       </div>
     </section>
     
-    <section id="special-moments" class="section">
-      <h2>Nos Moments Spéciaux</h2>
-      <p>Ces symboles représentent quelques-uns de nos moments préférés ensemble. 
-         Tu peux les remplacer par des photos de vous deux!</p>
+    <section id="puzzle-game" class="section">
+      <h2>Puzzle d'Amour</h2>
+      <p>Choisis une image et résous le puzzle! Plus tu m'aimes, plus facile ce sera 😉</p>
       
-      <div class="gallery">
-        <div class="gallery-item floating">💑</div>
-        <div class="gallery-item floating">🌅</div>
-        <div class="gallery-item floating">🍕</div>
-        <div class="gallery-item floating">🎬</div>
-        <div class="gallery-item floating">🎵</div>
-        <div class="gallery-item floating">⭐</div>
+      <div class="image-upload">
+        <input type="file" id="image-input" accept="image/*">
+        <select id="difficulty-select">
+          <option value="3">Facile (3x3)</option>
+          <option value="4">Moyen (4x4)</option>
+          <option value="5">Difficile (5x5)</option>
+        </select>
+        <button id="start-puzzle">Commencer le puzzle</button>
       </div>
       
-      <p>Et il y a encore tant d'autres moments merveilleux à venir...</p>
+      <div id="puzzle-container">
+        <img id="puzzle-image" src="/api/placeholder/500/375" alt="Puzzle image">
+      </div>
+      
+      <p id="puzzle-message"></p>
+      <button id="solve-puzzle" style="display:none;">Voir la solution</button>
     </section>
   </div>
 
@@ -385,27 +414,28 @@
         {
           question: 'Quel est mon plat préféré?',
           options: ['Pizza', 'Sushi', 'Pâtes', 'Salade'],
-          correctIndex: 0, // Change this to the correct answer
+          correctIndex: 1, // Sushi
         },
         {
           question: 'Quelle est ma couleur préférée?',
           options: ['Bleu', 'Rouge', 'Vert', 'Noir'],
-          correctIndex: 1, // Change this to the correct answer
+          correctIndex: 0, // Bleu
         },
         {
           question: 'Que préférerais-je faire un samedi après-midi?',
           options: ['Netflix & Chill', 'Sortie en nature', 'Shopping', 'Jeux vidéo'],
-          correctIndex: 0, // Change this to the correct answer
+          correctIndex: 0, // Netflix & Chill
         },
         {
           question: 'Quelle est mon animal favori?',
           options: ['Chat', 'Chien', 'Panda', 'Dauphin'],
-          correctIndex: 2, // Change this to the correct answer
+          correctIndex: 0, // Chat
         },
         {
           question: 'Quelle qualité apprécies-tu le plus chez moi?',
           options: ['Mon humour', 'Ma gentillesse', 'Mon intelligence', 'Ma créativité'],
-          correctIndex: 0, // Change this to the correct answer
+          allCorrect: true,
+          feedback: 'Faux, c\'était tout à la fois! ❤️'
         }
       ];
       
@@ -436,24 +466,42 @@
       function checkAnswer(selectedIndex) {
         const question = questions[currentQuestionIndex];
         
-        if (selectedIndex === question.correctIndex) {
+        if (question.allCorrect) {
+          quizResult.textContent = question.feedback;
+          quizResult.style.color = '#ff4081';
+          
+          const optionButtons = quizOptions.querySelectorAll('button');
+          optionButtons.forEach(button => {
+            button.disabled = true;
+            button.style.backgroundColor = '#4caf50';
+          });
+          
+        } else if (selectedIndex === question.correctIndex) {
           score++;
           quizResult.textContent = '✅ Correct!';
           quizResult.style.color = '#4caf50';
+          
+          const optionButtons = quizOptions.querySelectorAll('button');
+          optionButtons.forEach((button, index) => {
+            button.disabled = true;
+            if (index === question.correctIndex) {
+              button.style.backgroundColor = '#4caf50';
+            }
+          });
         } else {
           quizResult.textContent = `❌ Non, la bonne réponse était: ${question.options[question.correctIndex]}`;
           quizResult.style.color = '#f44336';
+          
+          const optionButtons = quizOptions.querySelectorAll('button');
+          optionButtons.forEach((button, index) => {
+            button.disabled = true;
+            if (index === question.correctIndex) {
+              button.style.backgroundColor = '#4caf50';
+            } else if (index === selectedIndex) {
+              button.style.backgroundColor = '#f44336';
+            }
+          });
         }
-        
-        const optionButtons = quizOptions.querySelectorAll('button');
-        optionButtons.forEach((button, index) => {
-          button.disabled = true;
-          if (index === question.correctIndex) {
-            button.style.backgroundColor = '#4caf50';
-          } else if (index === selectedIndex && selectedIndex !== question.correctIndex) {
-            button.style.backgroundColor = '#f44336';
-          }
-        });
         
         currentQuestionIndex++;
         
@@ -461,13 +509,13 @@
           nextQuestionBtn.style.display = 'inline-block';
         } else {
           setTimeout(() => {
-            quizResult.textContent = `Quiz terminé! Ton score: ${score}/${questions.length}`;
+            quizResult.textContent = `Quiz terminé! Ton score: ${score}/${questions.length - 1}`;
             quizResult.style.color = '#ff4081';
             
-            if (score === questions.length) {
+            if (score === questions.length - 1) {
               quizResult.textContent += ' - Tu me connais parfaitement! ❤️';
               createConfetti();
-            } else if (score >= questions.length / 2) {
+            } else if (score >= (questions.length - 1) / 2) {
               quizResult.textContent += ' - Pas mal du tout! 😊';
             } else {
               quizResult.textContent += ' - On dirait qu\'on doit passer plus de temps ensemble! 😉';
@@ -568,6 +616,231 @@
         }
       });
       
+      // Puzzle Game
+      const imageInput = document.getElementById('image-input');
+      const difficultySelect = document.getElementById('difficulty-select');
+      const startPuzzleBtn = document.getElementById('start-puzzle');
+      const solvePuzzleBtn = document.getElementById('solve-puzzle');
+      const puzzleContainer = document.getElementById('puzzle-container');
+      const puzzleImage = document.getElementById('puzzle-image');
+      const puzzleMessage = document.getElementById('puzzle-message');
+      
+      let puzzlePieces = [];
+      let originalPositions = [];
+      let gridSize = 3;
+      let pieceWidth, pieceHeight;
+      let imageLoaded = false;
+      
+      imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            puzzleImage.src = event.target.result;
+            puzzleImage.style.display = 'block';
+            imageLoaded = true;
+            
+            // Preload image to get dimensions
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+              // Just for display, but hide after loading
+              setTimeout(() => {
+                puzzleImage.style.display = 'none';
+              }, 1000);
+            };
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      startPuzzleBtn.addEventListener('click', function() {
+        if (!imageLoaded) {
+          puzzleMessage.textContent = 'Sélectionne d\'abord une image!';
+          return;
+        }
+        
+        gridSize = parseInt(difficultySelect.value);
+        createPuzzle();
+        solvePuzzleBtn.style.display = 'inline-block';
+      });
+      
+      solvePuzzleBtn.addEventListener('click', function() {
+        showSolution();
+      });
+      
+      function createPuzzle() {
+        // Clear previous puzzle
+        while (puzzleContainer.children.length > 1) {
+          puzzleContainer.removeChild(puzzleContainer.lastChild);
+        }
+        
+        puzzleMessage.textContent = '';
+        puzzlePieces = [];
+        originalPositions = [];
+        
+        // Get container dimensions
+        const containerWidth = puzzleContainer.offsetWidth;
+        const containerHeight = puzzleContainer.offsetHeight;
+        
+        pieceWidth = containerWidth / gridSize;
+        pieceHeight = containerHeight / gridSize;
+        
+        // Create puzzle pieces
+        for (let y = 0; y < gridSize; y++) {
+          for (let x = 0; x < gridSize; x++) {
+            const piece = document.createElement('div');
+            piece.className = 'puzzle-piece';
+            piece.style.width = pieceWidth + 'px';
+            piece.style.height = pieceHeight + 'px';
+            piece.style.backgroundImage = `url(${puzzleImage.src})`;
+            piece.style.backgroundSize = `${containerWidth}px ${containerHeight}px`;
+            piece.style.backgroundPosition = `-${x * pieceWidth}px -${y * pieceHeight}px`;
+            
+            // Store original position
+            const originalPosition = { x: x * pieceWidth, y: y * pieceHeight };
+            originalPositions.push(originalPosition);
+            
+            // Set initial position
+            let randomX, randomY;
+            
+            // Make sure pieces aren't placed in the correct position initially
+            do {
+              randomX = Math.floor(Math.random() * (containerWidth - pieceWidth));
+              randomY = Math.floor(Math.random() * (containerHeight - pieceHeight));
+            } while (
+              Math.abs(randomX - originalPosition.x) < pieceWidth / 2 && 
+              Math.abs(randomY - originalPosition.y) < pieceHeight / 2
+            );
+            
+            piece.style.left = randomX + 'px';
+            piece.style.top = randomY + 'px';
+            
+            // Add drag functionality
+            piece.setAttribute('draggable', 'true');
+            
+            // Store the original grid position for checking solution
+            piece.dataset.gridX = x;
+            piece.dataset.gridY = y;
+            
+            puzzleContainer.appendChild(piece);
+            puzzlePieces.push(piece);
+            
+            // Add drag functionality
+            piece.addEventListener('mousedown', startDrag);
+          }
+        }
+        
+        function startDrag(e) {
+          const piece = e.target;
+          
+          // Calculate offsets
+          const offsetX = e.clientX - piece.getBoundingClientRect().left;
+          const offsetY = e.clientY - piece.getBoundingClientRect().top;
+          
+          // Move piece to top (z-index)
+          piece.style.zIndex = '10';
+          
+          // Add move and stop events
+          document.addEventListener('mousemove', dragMove);
+          document.addEventListener('mouseup', stopDrag);
+          
+          function dragMove(e) {
+            // Calculate new position
+            const containerRect = puzzleContainer.getBoundingClientRect();
+            let newX = e.clientX - containerRect.left - offsetX;
+            let newY = e.clientY - containerRect.top - offsetY;
+            
+            // Keep within container bounds
+            newX = Math.max(0, Math.min(newX, containerRect.width - pieceWidth));
+            newY = Math.max(0, Math.min(newY, containerRect.height - pieceHeight));
+            
+            // Update position
+            piece.style.left = newX + 'px';
+            piece.style.top = newY + 'px';
+          }
+          
+          function stopDrag() {
+            // Reset z-index
+            piece.style.zIndex = '1';
+            
+            // Remove events
+            document.removeEventListener('mousemove', dragMove);
+            document.removeEventListener('mouseup', stopDrag);
+            
+            // Snap to grid
+            snapToGrid(piece);
+            
+            // Check if puzzle is solved
+            checkPuzzleSolution();
+          }
+        }
+      }
+      
+      function snapToGrid(piece) {
+        const x = parseInt(piece.style.left);
+        const y = parseInt(piece.style.top);
+        
+        // Find the closest grid position
+        const gridX = Math.round(x / pieceWidth);
+        const gridY = Math.round(y / pieceHeight);
+        
+        // Snap to that position
+        const snappedX = gridX * pieceWidth;
+        const snappedY = gridY * pieceHeight;
+        
+        // Animate to the snapped position
+        piece.style.transition = 'left 0.2s, top 0.2s';
+        piece.style.left = snappedX + 'px';
+        piece.style.top = snappedY + 'px';
+        
+        // Remove transition after animation
+        setTimeout(() => {
+          piece.style.transition = '';
+        }, 200);
+        
+        // Check if piece is in the correct position
+        const correctX = parseInt(piece.dataset.gridX) * pieceWidth;
+        const correctY = parseInt(piece.dataset.gridY) * pieceHeight;
+        
+        if (Math.abs(snappedX - correctX) < 5 && Math.abs(snappedY - correctY) < 5) {
+          piece.classList.add('correct');
+          piece.style.left = correctX + 'px';
+          piece.style.top = correctY + 'px';
+        } else {
+          piece.classList.remove('correct');
+        }
+      }
+      
+      function checkPuzzleSolution() {
+        const allCorrect = puzzlePieces.every(piece => piece.classList.contains('correct'));
+        
+        if (allCorrect) {
+          puzzleMessage.textContent = 'Félicitations! Tu as résolu le puzzle! 💕';
+          createConfetti();
+        }
+      }
+      
+      function showSolution() {
+        puzzlePieces.forEach((piece, index) => {
+          const x = parseInt(piece.dataset.gridX) * pieceWidth;
+          const y = parseInt(piece.dataset.gridY) * pieceHeight;
+          
+          piece.style.transition = 'left 0.5s, top 0.5s';
+          piece.style.left = x + 'px';
+          piece.style.top = y + 'px';
+          
+          setTimeout(() => {
+            piece.classList.add('correct');
+          }, 500);
+        });
+        
+        setTimeout(() => {
+          puzzleMessage.textContent = 'Puzzle résolu! 💕';
+          createConfetti();
+        }, 600);
+      }
+      
       // Confetti effect
       function createConfetti() {
         const confettiCount = 200;
@@ -576,47 +849,3 @@
         for (let i = 0; i < confettiCount; i++) {
           const confetti = document.createElement('div');
           confetti.classList.add('confetti');
-          
-          const color = colors[Math.floor(Math.random() * colors.length)];
-          const size = Math.random() * 10 + 5;
-          const shape = Math.random() > 0.5 ? '50%' : '0';
-          
-          confetti.style.backgroundColor = color;
-          confetti.style.width = `${size}px`;
-          confetti.style.height = `${size}px`;
-          confetti.style.borderRadius = shape;
-          confetti.style.left = `${Math.random() * 100}vw`;
-          confetti.style.top = `-${size}px`;
-          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-          
-          const animation = confetti.animate(
-            [
-              { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
-              { transform: `translate(${Math.random() * 100 - 50}px, ${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
-            ],
-            {
-              duration: Math.random() * 3000 + 2000,
-              easing: 'cubic-bezier(0,0,0.2,1)'
-            }
-          );
-          
-          document.body.appendChild(confetti);
-          
-          animation.onfinish = () => {
-            confetti.remove();
-          };
-        }
-      }
-      
-      // Initialize everything
-      displayQuestion();
-      createMemoryGame();
-      
-      // Animate in the first section
-      setTimeout(() => {
-        document.querySelector('#main-question').classList.add('visible');
-      }, 300);
-    });
-  </script>
-</body>
-</html>
