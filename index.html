@@ -98,7 +98,7 @@
       margin: 30px 0;
     }
     
-    #quiz-container, #memory-game, #love-letter, #photo-puzzle {
+    #quiz-container, #memory-game, #love-letter, #special-moments {
       margin-top: 40px;
     }
     
@@ -161,83 +161,25 @@
       display: block;
     }
 
-    /* Photo puzzle section */
-    #photo-upload {
+    /* Special moments gallery */
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
       margin: 20px 0;
     }
     
-    #photo-upload-label {
-      display: inline-block;
-      padding: 12px 30px;
-      background-color: #ff6b9c;
-      color: white;
-      border-radius: 50px;
-      cursor: pointer;
-      margin: 10px;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    }
-    
-    #photo-upload-label:hover {
-      background-color: #ff4081;
-      transform: translateY(-3px);
-      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-    }
-    
-    #photo-input {
-      display: none;
-    }
-    
-    #puzzle-container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-      margin: 20px auto;
-      border: 2px solid #ff6b9c;
+    .gallery-item {
+      width: 120px;
+      height: 120px;
+      background-color: #ffd6e6;
       border-radius: 10px;
-      overflow: hidden;
-    }
-    
-    @media (max-width: 400px) {
-      #puzzle-container {
-        width: 260px;
-        height: 260px;
-      }
-    }
-    
-    .puzzle-piece {
-      position: absolute;
-      background-size: 300px 300px;
-      border: 1px solid white;
-      cursor: move;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: transform 0.1s;
-    }
-    
-    @media (max-width: 400px) {
-      .puzzle-piece {
-        background-size: 260px 260px;
-      }
-    }
-    
-    .puzzle-piece.correct {
-      border-color: #4caf50;
-      box-shadow: 0 0 5px #4caf50;
-    }
-    
-    #puzzle-message {
-      margin: 15px 0;
-      font-weight: bold;
-      height: 50px;
-    }
-    
-    #puzzle-preview {
-      max-width: 100px;
-      max-height: 100px;
-      margin: 10px auto;
-      border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      display: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
     }
     
     /* Animations */
@@ -371,25 +313,6 @@
         <p>Merci d'être toi, merci d'être à mes côtés.</p>
         <p class="signature">Avec tout mon amour,<br>Ton amoureux</p>
       </div>
-    </section>
-    
-    <!-- Nouvelle section puzzle photo -->
-    <section id="photo-puzzle" class="section">
-      <h2>Puzzle Photo <span class="heart">❤️</span></h2>
-      <p>Télécharge une photo de nous et résous le puzzle!</p>
-      
-      <div id="photo-upload">
-        <label for="photo-input" id="photo-upload-label">Choisir une photo</label>
-        <input type="file" id="photo-input" accept="image/*">
-      </div>
-      
-      <img id="puzzle-preview" alt="Aperçu">
-      
-      <div id="puzzle-container"></div>
-      
-      <p id="puzzle-message">Télécharge une photo pour commencer le puzzle!</p>
-      
-      <button id="restart-puzzle" style="display: none;">Recommencer le puzzle</button>
     </section>
   </div>
 
@@ -628,211 +551,55 @@
         }
       });
       
-      // Photo puzzle functionality
-      const photoInput = document.getElementById('photo-input');
-      const puzzleContainer = document.getElementById('puzzle-container');
-      const puzzleMessage = document.getElementById('puzzle-message');
-      const puzzlePreview = document.getElementById('puzzle-preview');
-      const restartPuzzleBtn = document.getElementById('restart-puzzle');
-      
-      // Dimensions du puzzle
-      const PUZZLE_SIZE = 3; // 3x3 puzzle
-      const TOTAL_PIECES = PUZZLE_SIZE * PUZZLE_SIZE;
-      let puzzlePieces = [];
-      let correctPositions = [];
-      let selectedPiece = null;
-      let startX, startY, pieceX, pieceY;
-      let puzzleComplete = false;
-      let photoURL = null;
-      
-      // Gestionnaires d'événements tactiles et souris pour le drag and drop
-      function handleStart(e) {
-        if (puzzleComplete) return;
+      // Confetti effect
+      function createConfetti() {
+        const confettiCount = 200;
+        const colors = ['#ff4081', '#ff80ab', '#ff94c2', '#f8bbd0', '#fce4ec', '#ffb6c1', '#ffa6c9'];
         
-        // Empêcher le comportement par défaut pour éviter les problèmes sur mobile
-        e.preventDefault();
-        
-        // Obtenir l'élément cliqué/touché
-        selectedPiece = e.target;
-        if (!selectedPiece.classList.contains('puzzle-piece')) return;
-        
-        // Mettre la pièce au-dessus des autres
-        selectedPiece.style.zIndex = '10';
-        
-        // Coordonnées de départ
-        if (e.type === 'mousedown') {
-          startX = e.clientX;
-          startY = e.clientY;
-        } else if (e.type === 'touchstart') {
-          startX = e.touches[0].clientX;
-          startY = e.touches[0].clientY;
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const size = Math.random() * 10 + 5;
+          const shape = Math.random() > 0.5 ? '50%' : '0';
+          
+          confetti.style.backgroundColor = color;
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.borderRadius = shape;
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.top = `-${size}px`;
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+          
+          const animation = confetti.animate(
+            [
+              { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+              { transform: `translate(${Math.random() * 100 - 50}px, ${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+            ],
+            {
+              duration: Math.random() * 3000 + 2000,
+              easing: 'cubic-bezier(0,0,0.2,1)'
+            }
+          );
+          
+          document.body.appendChild(confetti);
+          
+          animation.onfinish = () => {
+            confetti.remove();
+          };
         }
-        
-        // Position actuelle de la pièce
-        pieceX = parseFloat(selectedPiece.style.left) || 0;
-        pieceY = parseFloat(selectedPiece.style.top) || 0;
       }
       
-      function handleMove(e) {
-        if (!selectedPiece) return;
-        e.preventDefault();
-        
-        let moveX, moveY;
-        
-        if (e.type === 'mousemove') {
-          moveX = e.clientX - startX;
-          moveY = e.clientY - startY;
-        } else if (e.type === 'touchmove') {
-          moveX = e.touches[0].clientX - startX;
-          moveY = e.touches[0].clientY - startY;
-        }
-        
-        // Déplacer la pièce
-        selectedPiece.style.left = pieceX + moveX + 'px';
-        selectedPiece.style.top = pieceY + moveY + 'px';
-      }
+      // Initialize everything
+      displayQuestion();
+      createMemoryGame();
       
-      function handleEnd(e) {
-        if (!selectedPiece) return;
-        
-        // Vérifier si la pièce est proche de sa position correcte
-        const index = parseInt(selectedPiece.dataset.index);
-        const containerRect = puzzleContainer.getBoundingClientRect();
-        const pieceRect = selectedPiece.getBoundingClientRect();
-        
-        const pieceSize = containerRect.width / PUZZLE_SIZE;
-        const row = Math.floor(index / PUZZLE_SIZE);
-        const col = index % PUZZLE_SIZE;
-        
-        const correctX = col * pieceSize;
-        const correctY = row * pieceSize;
-        
-        const currentX = pieceRect.left - containerRect.left;
-        const currentY = pieceRect.top - containerRect.top;
-        
-        // Si la pièce est proche de sa position correcte
-        if (Math.abs(currentX - correctX) < 20 && Math.abs(currentY - correctY) < 20) {
-          selectedPiece.style.left = correctX + 'px';
-          selectedPiece.style.top = correctY + 'px';
-          selectedPiece.classList.add('correct');
-          correctPositions[index] = true;
-          
-          // Vérifier si le puzzle est complet
-          if (correctPositions.every(pos => pos === true)) {
-            puzzleComplete = true;
-            puzzleMessage.textContent = 'Félicitations! Tu as résolu le puzzle! ❤️';
-            puzzleMessage.style.color = '#ff4081';
-            createConfetti();
-          }
-        }
-        
-        selectedPiece.style.zIndex = '1';
-        selectedPiece = null;
-      }
-      
-      // Créer le puzzle à partir d'une image
-      function createPuzzle(imageUrl) {
-        puzzleContainer.innerHTML = '';
-        puzzleComplete = false;
-        correctPositions = Array(TOTAL_PIECES).fill(false);
-        puzzlePieces = [];
-        
-        // Afficher l'aperçu
-        puzzlePreview.src = imageUrl;
-        puzzlePreview.style.display = 'block';
-        
-        // Obtenir les dimensions du conteneur
-        const containerWidth = puzzleContainer.clientWidth;
-        const pieceSize = containerWidth / PUZZLE_SIZE;
-        
-        // Créer les pièces du puzzle
-        for (let i = 0; i < TOTAL_PIECES; i++) {
-          const piece = document.createElement('div');
-          piece.classList.add('puzzle-piece');
-          piece.dataset.index = i;
-          
-          // Calculer la position d'origine dans l'image
-          const row = Math.floor(i / PUZZLE_SIZE);
-          const col = i % PUZZLE_SIZE;
-          
-          piece.style.width = pieceSize + 'px';
-          piece.style.height = pieceSize + 'px';
-          piece.style.backgroundImage = `url(${imageUrl})`;
-          piece.style.backgroundPosition = `-${col * pieceSize}px -${row * pieceSize}px`;
-          
-          puzzlePieces.push({
-            element: piece,
-            correctX: col * pieceSize,
-            correctY: row * pieceSize
-          });
-          
-          puzzleContainer.appendChild(piece);
-        }
-        
-        // Mélanger les pièces
-        shufflePieces();
-        
-        // Activer le bouton de redémarrage
-        restartPuzzleBtn.style.display = 'inline-block';
-        
-        // Mettre à jour le message
-        puzzleMessage.textContent = 'Fais glisser les pièces pour reconstituer l\'image!';
-      }
-      
-      // Mélanger les pièces du puzzle
-      function shufflePieces() {
-        const containerWidth = puzzleContainer.clientWidth;
-        const pieceSize = containerWidth / PUZZLE_SIZE;
-        
-        puzzlePieces.forEach(piece => {
-          // Position aléatoire dans le conteneur
-          const randomX = Math.random() * (containerWidth - pieceSize);
-          const randomY = Math.random() * (containerWidth - pieceSize);
-          
-          piece.element.style.left = randomX + 'px';
-          piece.element.style.top = randomY + 'px';
-          piece.element.classList.remove('correct');
-        });
-      }
-      
-      // Gestionnaire d'événement pour le chargement de photo
-      photoInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        // Vérifier si c'est une image
-        if (!file.type.match('image.*')) {
-          puzzleMessage.textContent = 'Veuillez sélectionner une image.';
-          puzzleMessage.style.color = '#f44336';
-          return;
-        }
-        
-        // Révoquer l'URL précédente pour libérer la mémoire
-        if (photoURL) {
-          URL.revokeObjectURL(photoURL);
-        }
-        
-        // Créer une URL pour l'image
-        photoURL = URL.createObjectURL(file);
-        
-        // Créer le puzzle avec cette image
-        createPuzzle(photoURL);
-      });
-      
-      // Événement pour redémarrer le puzzle
-      restartPuzzleBtn.addEventListener('click', function() {
-        if (photoURL) {
-          shufflePieces();
-          puzzleComplete = false;
-          correctPositions = Array(TOTAL_PIECES).fill(false);
-          puzzleMessage.textContent = 'Fais glisser les pièces pour reconstituer l\'image!';
-          puzzleMessage.style.color = '#333';
-        }
-      });
-      
-      // Ajouter les gestionnaires d'événements tactiles et souris au conteneur
-      puzzleContainer.addEventListener('mousedown', handleStart);
-      puzzleContainer.addEventListener('touchstart', handleStart, { passive: false });
-      
-      window.addEventListener('mousemove', handleMove);
-      window.addEventListener('touchmove', handleMove
+      // Animate in the first section
+      setTimeout(() => {
+        document.querySelector('#main-question').classList.add('visible');
+      }, 300);
+    });
+  </script>
+</body>
+</html>
